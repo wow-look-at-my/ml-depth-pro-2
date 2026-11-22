@@ -1,7 +1,11 @@
 # syntax=docker/dockerfile:1
 
 FROM python:3.12-slim-trixie AS build
+<<<<<<< HEAD
 RUN pip install --no-cache-dir --root-user-action=ignore uv==0.13.9
+=======
+COPY --from=ghcr.io/astral-sh/uv:0.13.9 /uv /usr/local/bin/uv
+>>>>>>> origin/master
 
 # The CUDA build of PyTorch.
 ARG TORCH_BACKEND=cu126

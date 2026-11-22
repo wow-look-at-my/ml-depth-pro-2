@@ -44,6 +44,7 @@ services:
               count: all
               capabilities: [gpu]
 
+<<<<<<< HEAD
   # docker compose run --rm nvidia-smi lists the GPUs that the container sees.
   nvidia-smi:
     extends:
@@ -52,5 +53,7 @@ services:
     entrypoint: ["nvidia-smi"]
     command: []
 
+=======
+>>>>>>> origin/master
 volumes:
   cache:
