@@ -1,10 +1,8 @@
-# Overrides docker-compose.yml for a machine with no NVIDIA GPU, such as a CI runner.
+# For a CI runner: it has no NVIDIA runtime to reserve a GPU from, and little disk.
 services:
   depth-pro-2:
     build:
       args:
         TORCH_BACKEND: cpu
-    image: depth-pro-2:cpu
-    environment:
-      DEPTH_PRO_2_DEVICE: ${DEPTH_PRO_2_DEVICE:-cpu}
+    image: depth-pro-2:ci
     deploy: !reset null

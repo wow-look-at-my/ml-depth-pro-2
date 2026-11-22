@@ -14,7 +14,7 @@ uv run depth-pro-2 predict -i assets/example.mp4 -o out/ -m depthpro2-s
 
 `predict` prints the focal length it used and a depth range in meters.
 
-`tests/docker-smoke.sh` builds the Docker image with CPU PyTorch and runs the example photo through `docker-compose.yml`. CI runs it on every push.
+`tests/docker-smoke.sh` builds the Docker image and checks that `predict` refuses to run on a machine with no GPU. CI runs it on every push.
 
 ## Code
 
