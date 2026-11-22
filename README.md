@@ -50,8 +50,8 @@ The run stops with an error if PyTorch cannot use the GPU. It does not fall back
 | `DEPTH_PRO_2_DEVICE` | `cuda` | Device to require, such as `cuda:1` for the second GPU. |
 
 ```bash
-docker compose run --rm --entrypoint nvidia-smi depth-pro-2   # does the container see the GPU?
-docker compose down --rmi all --volumes                       # remove the image and the weights
+docker compose run --rm nvidia-smi        # does the container see the GPU?
+docker compose down --rmi all --volumes   # remove the image and the weights
 ```
 
 ## Outputs
