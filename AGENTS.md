@@ -14,6 +14,8 @@ uv run depth-pro-2 predict -i assets/example.mp4 -o out/ -m depthpro2-s
 
 `predict` prints the focal length it used and a depth range in meters.
 
+`tests/docker-smoke.sh` builds the Docker image with CPU PyTorch and runs the example photo through `docker-compose.yml`. CI runs it on every push.
+
 ## Code
 
 - `src/depth_pro_2/model.py`: model presets, weight loading, `infer`, `infer_video`, `stream`.
@@ -23,6 +25,7 @@ uv run depth-pro-2 predict -i assets/example.mp4 -o out/ -m depthpro2-s
 - `src/depth_pro_2/utils.py`: `load_rgb` (a photo, upright, with its EXIF focal length),
   `upright` (a decoded video frame, upright), `default_device`.
 - `src/depth_pro_2/cli.py`: the `predict` command.
+- `Dockerfile`, `docker-compose.yml`: the container for Linux with an NVIDIA GPU. `in/` and `out/` are its default host folders.
 - `demo/`: the Mac demo (`apple/`, Swift) and its Core ML exporter (`export/`, `uv sync --extra coreml`).
 
 ## Facts not in the README

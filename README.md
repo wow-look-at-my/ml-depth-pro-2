@@ -25,6 +25,35 @@ The first run downloads the weights of the default model, H+ (3.5 GB). On a lapt
 
 To process many images in one run, pass a folder or repeat `-i`. The model loads once for the whole run. Each image is predicted independently, with its own focal length. For the frames of a video, pass a video file instead, or pass the frames to `infer_video` in Python. Both process the frames jointly, with one focal length for the whole video.
 
+## Docker
+
+On Linux with an NVIDIA GPU, Docker Compose runs the model in a container. The host needs Docker, the NVIDIA driver and the [NVIDIA Container Toolkit](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html). Python, PyTorch and the weights stay in the image and in one Docker volume.
+
+```bash
+cp assets/example.jpg assets/example.mp4 in/
+docker compose run --rm depth-pro-2
+```
+
+The first run builds the image and downloads the weights of H+. It predicts everything in `./in`, mounted read-only, and writes to `./out`. For other options, give the whole command, with the paths as the container sees them:
+
+```bash
+docker compose run --rm depth-pro-2 predict -i /in/example.mp4 -o /out -m depthpro2-s --save-npz
+```
+
+The run stops with an error if PyTorch cannot use the GPU. It does not fall back to the CPU. Set these in the environment or in a `.env` file:
+
+| Variable | Default | Meaning |
+|---|---|---|
+| `DP2_IN`, `DP2_OUT` | `./in`, `./out` | Host folders to read and to write. Both must exist. |
+| `PUID`, `PGID` | `1000` | User and group that own the files in `./out`: yours are `id -u` and `id -g`. |
+| `TORCH_BACKEND` | `cu126` | CUDA build of PyTorch: `cu126` for NVIDIA driver 525 or later, `cu132` for 580 or later. Rebuild with `docker compose build` after a change. |
+| `DEPTH_PRO_2_DEVICE` | `cuda` | Device to require, such as `cuda:1` for the second GPU. |
+
+```bash
+docker compose run --rm --entrypoint nvidia-smi depth-pro-2   # does the container see the GPU?
+docker compose down --rmi all --volumes                       # remove the image and the weights
+```
+
 ## Outputs
 
 The command writes its results to the folder given by `-o`:
