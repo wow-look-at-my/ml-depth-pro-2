@@ -12,6 +12,8 @@ services:
     environment:
       # A missing GPU stops the run. Without this, the model falls back to the CPU.
       DEPTH_PRO_2_DEVICE: ${DEPTH_PRO_2_DEVICE:-cuda}
+      # PyTorch saves the weights readable by their owner only, so each user id has its own.
+      XDG_CACHE_HOME: /cache/uid-${PUID:-1000}
     command: ["predict", "-i", "/in", "-o", "/out"]
     volumes:
       # create_host_path: false stops Docker from making a root-owned folder on the host.

@@ -33,9 +33,7 @@ ENV PATH=/opt/venv/bin:$PATH \
     PYTHONUNBUFFERED=1 \
     HOME=/tmp \
     MPLCONFIGDIR=/tmp/matplotlib \
-    TORCH_HOME=/cache/torch \
-    HF_HOME=/cache/huggingface \
-    XDG_CACHE_HOME=/cache/xdg
+    XDG_CACHE_HOME=/cache
 
 USER 1000:1000
 ENTRYPOINT ["depth-pro-2"]

@@ -6,6 +6,7 @@
 from __future__ import annotations
 
 import logging
+import os
 from collections import Counter
 from fractions import Fraction
 from pathlib import Path
@@ -156,12 +157,17 @@ def predict_cli(
             f"{overlap} must be less than --window ({window}).", param_hint="'--overlap'"
         )
     inputs = collect_inputs(input_path, output_path)
+    # Before the model loads: its first run downloads gigabytes of weights.
+    output_path.mkdir(parents=True, exist_ok=True)
+    if not os.access(output_path, os.W_OK | os.X_OK):
+        raise click.ClickException(
+            f"Cannot write to {output_path}: check the folder's owner and permissions."
+        )
     device = default_device() if device is None else named_device(device)
     net, transform = create_model_and_transforms(
         model, device, None if precision is None else PRECISIONS[precision]
     )
     click.echo(f"Loading {model} onto {device} in {str(net.precision).removeprefix('torch.')}.")
-    output_path.mkdir(parents=True, exist_ok=True)
     for path in inputs:
         if path.suffix.lower() in VIDEO_EXTENSIONS:
             predict_video(
