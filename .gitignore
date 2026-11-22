@@ -7,5 +7,9 @@ checkpoints
 *.pt
 .DS_Store
 *.mlpackage
-out/
+/in/*
+!/in/.gitkeep
+/out/*
+!/out/.gitkeep
+.env
 *.log
