@@ -106,6 +106,13 @@ def main_cli():
     "fp16 is closer to fp32 than bf16 is; fp32 runs without autocast.",
 )
 @click.option(
+    "--device",
+    envvar="DEPTH_PRO_2_DEVICE",
+    default=None,
+    help="Device to run on, such as cuda, cuda:1, mps or cpu. By default the first available of "
+    "CUDA, MPS and the CPU. A named device that is unavailable is an error, not a fallback.",
+)
+@click.option(
     "--save-npz",
     is_flag=True,
     help="Also write depth in meters and the focal length as .npz. Large for a video, which "
@@ -125,6 +132,7 @@ def predict_cli(
     window: int,
     overlap: int,
     precision: str | None,
+    device: str | None,
     save_npz: bool,
     save_png16: bool,
 ):
@@ -148,7 +156,7 @@ def predict_cli(
             f"{overlap} must be less than --window ({window}).", param_hint="'--overlap'"
         )
     inputs = collect_inputs(input_path, output_path)
-    device = default_device()
+    device = default_device() if device is None else named_device(device)
     net, transform = create_model_and_transforms(
         model, device, None if precision is None else PRECISIONS[precision]
     )
@@ -161,6 +169,25 @@ def predict_cli(
             )
         else:
             predict_image(net, transform, path, output_path, save_npz, save_png16)
+
+
+def named_device(name: str) -> torch.device:
+    """The device ``name``, or a usage error if PyTorch cannot run on it here."""
+    try:
+        device = torch.device(name)
+    except RuntimeError as error:
+        raise click.BadParameter(str(error), param_hint="'--device'") from error
+    available = {
+        "cuda": torch.cuda.is_available,
+        "mps": torch.backends.mps.is_available,
+    }.get(device.type, lambda: True)
+    if not available():
+        raise click.ClickException(
+            f"--device {name}: PyTorch finds no usable {device.type} device. For CUDA, check "
+            "that the NVIDIA driver is new enough for this PyTorch build and, in a container, "
+            "that the GPU is passed through."
+        )
+    return device
 
 
 def collect_inputs(paths: Sequence[Path], output_path: Path) -> list[Path]:

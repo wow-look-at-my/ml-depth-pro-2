@@ -1,0 +1,46 @@
+name: depth-pro-2
+
+services:
+  depth-pro-2:
+    build:
+      context: .
+      args:
+        TORCH_BACKEND: ${TORCH_BACKEND:-cu126}
+    image: depth-pro-2:local
+    # The files in ./out get this owner.
+    user: "${PUID:-1000}:${PGID:-1000}"
+    environment:
+      # A missing GPU stops the run. Without this, the model falls back to the CPU.
+      DEPTH_PRO_2_DEVICE: ${DEPTH_PRO_2_DEVICE:-cuda}
+    command: ["predict", "-i", "/in", "-o", "/out"]
+    volumes:
+      # create_host_path: false stops Docker from making a root-owned folder on the host.
+      - type: bind
+        source: ${DP2_IN:-./in}
+        target: /in
+        read_only: true
+        bind:
+          create_host_path: false
+      - type: bind
+        source: ${DP2_OUT:-./out}
+        target: /out
+        bind:
+          create_host_path: false
+      - type: volume
+        source: cache
+        target: /cache
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    init: true
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+
+volumes:
+  cache:
