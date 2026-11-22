@@ -30,14 +30,15 @@ To process many images in one run, pass a folder or repeat `-i`. The model loads
 On Linux with an NVIDIA GPU, Docker Compose runs the model in a container. The host needs Docker, the NVIDIA driver and the [NVIDIA Container Toolkit](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html). Python, PyTorch and the weights stay in the image and in one Docker volume.
 
 ```bash
-cp assets/example.jpg assets/example.mp4 in/
-docker compose run --rm depth-pro-2
+docker compose run --rm depth-pro-2 predict -i assets/example.jpg -o out/   # a photo
+docker compose run --rm depth-pro-2 predict -i assets/example.mp4 -o out/   # a video
 ```
 
-The first run builds the image and downloads the weights of H+. It predicts everything in `./in`, mounted read-only, and writes to `./out`. For other options, give the whole command, with the paths as the container sees them:
+The first run builds the image and downloads the weights of H+. The container sees folders of the repository: `assets/` and `in/`, both read-only, and `out/`. Put your own files in `in/`. With no arguments, the service predicts everything there:
 
 ```bash
-docker compose run --rm depth-pro-2 predict -i /in/example.mp4 -o /out -m depthpro2-s --save-npz
+docker compose run --rm depth-pro-2
+docker compose run --rm depth-pro-2 predict -i in/clip.mp4 -o out/ -m depthpro2-s --save-npz
 ```
 
 The run stops with an error if PyTorch cannot use the GPU. It does not fall back to the CPU. Set these in the environment or in a `.env` file:

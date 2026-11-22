@@ -30,6 +30,13 @@ services:
         target: /out
         bind:
           create_host_path: false
+      # The examples of the repository: -i assets/example.mp4 works as in the README.
+      - type: bind
+        source: ./assets
+        target: /assets
+        read_only: true
+        bind:
+          create_host_path: false
       - type: volume
         source: cache
         target: /cache

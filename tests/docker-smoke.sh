@@ -5,9 +5,8 @@ cd "$(dirname "$0")/.."
 
 export COMPOSE_FILE="${COMPOSE_FILE:-docker-compose.yml:tests/compose.cpu.yml}"
 export PUID="${PUID:-$(id -u)}" PGID="${PGID:-$(id -g)}"
-predict=(docker compose run --rm -T depth-pro-2 predict -i /in/example.jpg -o /out -m depthpro2-s)
+predict=(docker compose run --rm -T depth-pro-2 predict -i assets/example.jpg -o out/ -m depthpro2-s)
 
-cp assets/example.jpg in/
 rm -f out/example-depth.png
 docker compose build
 
